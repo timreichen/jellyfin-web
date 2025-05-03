@@ -1,12 +1,19 @@
-const fg = require('fast-glob');
-const path = require('path');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { DefinePlugin, IgnorePlugin } = require('webpack');
-const packageJson = require('./package.json');
+import fg from 'fast-glob';
+import path from 'path';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import packageJson from './package.json' with { type: 'json' };
+import webpack from 'webpack';
+const { DefinePlugin, IgnorePlugin } = webpack;
+
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+
+import childProcess from 'child_process';
+import postcssConfig from './postcss.config.js';
 
 const Assets = [
     'native-promise-only/npo.js',
@@ -23,7 +30,7 @@ const Assets = [
 const DEV_MODE = process.env.NODE_ENV !== 'production';
 let COMMIT_SHA = '';
 try {
-    COMMIT_SHA = require('child_process')
+    COMMIT_SHA = childProcess
         // eslint-disable-next-line sonarjs/no-os-command-from-path
         .execSync('git describe --always --dirty')
         .toString()
@@ -33,6 +40,8 @@ try {
 }
 
 const NODE_MODULES_REGEX = /[\\/]node_modules[\\/]/;
+
+const __dirname = import.meta.dirname;
 
 const THEMES = fg.globSync('themes/**/*.scss', { cwd: path.resolve(__dirname, 'src') });
 const THEMES_BY_ID = THEMES.reduce((acc, theme) => {
@@ -323,7 +332,7 @@ const config = {
                                 loader: 'postcss-loader',
                                 options: {
                                     postcssOptions: {
-                                        config: path.resolve(__dirname, 'postcss.config.js')
+                                        postcssConfig
                                     }
                                 }
                             },
@@ -370,4 +379,4 @@ const config = {
     }
 };
 
-module.exports = config;
+export default config;

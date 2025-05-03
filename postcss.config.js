@@ -1,9 +1,9 @@
-const packageConfig = require('./package.json');
-const postcssPresetEnv = require('postcss-preset-env');
-const autoprefixer = require('autoprefixer');
-const cssnano = require('cssnano');
+import packageConfig from './package.json' with { type: 'json' };
+import postcssPresetEnv from 'postcss-preset-env';
+import autoprefixer from 'autoprefixer';
+import cssnano from 'cssnano';
 
-const config = () => ({
+export default () => ({
     plugins: [
         // Explicitly specify browserslist to override ones from node_modules
         // For example, Swiper has it in its package.json
@@ -12,5 +12,3 @@ const config = () => ({
         cssnano()
     ]
 });
-
-module.exports = config;
